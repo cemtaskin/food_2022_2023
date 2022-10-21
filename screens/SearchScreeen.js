@@ -13,6 +13,7 @@ const SearchScreen = () => {
     searchApi();
   }, []);
 
+
   const searchApi = async (searchTerm) => {
     console.log("Search Started");
     try {
