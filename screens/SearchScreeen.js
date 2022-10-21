@@ -8,6 +8,9 @@ const SearchScreen = ()=>{
     const[result,setResult]=useState([]);
     const[term,setTerm]=useState('');
 
+    //initial search added 
+    
+
     const searchApi = async(searchTerm)=>{
         console.log('Search Started');
         try{
