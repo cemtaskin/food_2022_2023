@@ -1,43 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet,ScrollView} from "react-native";
 import SearchBar from "../components/SearchBar";
 import yelp from "../api/yelp";
+import useResults from "../hooks/useResults";
+import ResultList from "../components/ResultList";
 
-const SearchScreen = () => {
-  const [errorMessage, setErrorMessage] = useState("");
-  const [result, setResult] = useState([]);
+const SearchScreen = ({navigation}) => {
   const [term, setTerm] = useState("");
-
-  //initial search added
-  useEffect(() => {
-    searchApi();
-  }, []);
-
-
-  const searchApi = async (searchTerm) => {
-    console.log("Search Started");
-    try {
-      const response = await yelp.get("/search", {
-        params: {
-          limit: 50,
-          location: searchTerm,
-        },
-      });
-      setResult(response.data.businesses);
-    } catch (err) {
-      setErrorMessage("Something went wrong");
-    }
+  const  [searchApi,results,errorMessage] = useResults();
+  
+  const filterResultsByPrice = (price) =>{
+    // price=== '₺' || '₺₺' || '₺₺₺'
+    return results.filter(result  =>{
+      return result.price === price;
+    });
   };
 
   return (
-    <View style={{ backgroundColor: "gray" }}>
+    <View style={{ flex:1 }}>
       <SearchBar
         term={term}
         onTermChange={(newTerm) => setTerm(newTerm)}
         onTermSubmit={() => searchApi(term)}
       />
       {errorMessage ? <Text>{errorMessage}</Text> : null}
-      <Text>We haver found {result.length} results</Text>
+      <Text>We haver found {results.length} results</Text>
+      <ScrollView>
+        <ResultList navigation={navigation} title="Cost Effective" results={filterResultsByPrice('₺')} />
+        <ResultList navigation={navigation} title="Bit Pricier" results={filterResultsByPrice('₺₺')}/>
+        <ResultList navigation={navigation} title="Big Spender" results={filterResultsByPrice('₺₺₺')}/>
+      </ScrollView>
     </View>
   );
 };
